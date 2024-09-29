@@ -1,0 +1,64 @@
+import matplotlib.pyplot as plt
+import pandas as pd
+import pymssql
+
+# connexion à la base SAE_TEAM5
+psw = 'fqnsbtc4'
+usr = 'etd05'
+dtbs = 'SAE_TEAM5'
+cnxn = pymssql.connect ( server = 'info-mssql-etd', user = usr,      
+                        password = psw, database = dtbs ) 
+cursor = cnxn.cursor()
+
+print('<- connected! ->')
+
+def testGraph(cursor):
+    command = """
+    SELECT PYS_NOM, DTA_VALEUR
+    FROM T_DATA_DTA
+    INNER JOIN T_DATE_DAT ON T_DATE_DAT.DAT_ID = T_DATA_DTA.DTA_ID
+    INNER JOIN T_PAYS_PYS ON T_DATA_DTA.DTA_ID = T_PAYS_PYS.PYS_ID
+    WHERE PYS_NOM LIKE '%France%'
+       OR PYS_NOM LIKE '%Allemagne%'
+       OR PYS_NOM LIKE '%Chine%'
+       OR PYS_NOM LIKE '%Inde%'
+       OR PYS_NOM LIKE '%États-Unis%'
+       OR PYS_NOM LIKE '%Hollande%'
+       OR PYS_NOM LIKE '%Côte %'
+    """
+    cursor.execute(command)
+
+    x = []
+    y = []
+    rows = cursor.fetchall()
+    for row in rows:
+        # Simplification des noms des pays
+        if 'France' in row[0]:
+            x.append('France')
+        elif 'Allemagne' in row[0]:
+            x.append('Allemagne')
+        elif 'Chine' in row[0]:
+            x.append('Chine')
+        elif 'Inde' in row[0]:
+            x.append('Inde')
+        elif 'États-Unis' in row[0]:
+            x.append('États-Unis')
+        elif 'Hollande' in row[0]:
+            x.append('Hollande')
+        elif 'Côte' in row[0]:
+            x.append('Côte d\'Ivoire')
+        y.append(row[1])
+
+    plt.bar(x, y)
+    plt.title("ok")
+    plt.xlabel("Pays")
+    plt.ylabel("Valeur (unité)") # Rajouter l'unité de la valeur si connue
+
+    # Formatage des nombres à gauche avec peu de chiffres après la virgule
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.2f}'))
+
+    plt.show()
+
+    return
+
+testGraph(cursor)
