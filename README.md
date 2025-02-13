@@ -1,5 +1,4 @@
 # anhydralgo
-## Project with 4 collaborators carried out for the BUT Informatique at the end of the first year.
 
 ## Table of Contents
 - [Introduction](#introduction)
